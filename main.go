@@ -29,7 +29,7 @@ func main() {
 	defer termbox.Close()
 	//-------------------------------//
 
-	// Initialize game objects
+	// Initialize main window objects
 	//-------------------------------//
 	screenObjects := make(map[string]renderer)
 
@@ -37,25 +37,13 @@ func main() {
 	screenObjects["arena"] = arena
 	screenObjects["outerBox"] = newOuterBox(width, height)
 
-	title := &screenText{
-		text: "SNAKE",
-		x:    width/2 - 1,
-		y:    height/2 - 6,
-	}
+	title := &screenText{text: "SNAKE", x: width/2 - 1, y: height/2 - 6}
 	screenObjects["title"] = title
 
-	scoreTxt := &screenText{
-		text: "Score",
-		x:    width/2 + 11,
-		y:    height/2 - 3,
-	}
+	scoreTxt := &screenText{text: "Score", x: width/2 + 11, y: height/2 - 3}
 	screenObjects["scoreTxt"] = scoreTxt
 
-	bestScoreTxt := &screenText{
-		text: "Best",
-		x:    width/2 + 11,
-		y:    height / 2,
-	}
+	bestScoreTxt := &screenText{text: "Best", x: width/2 + 11, y: height / 2}
 	screenObjects["bestScoreTxt"] = bestScoreTxt
 
 	score := newScore(width/2+11, height/2-2)
@@ -77,6 +65,7 @@ func main() {
 
 	// Startup window
 	//-------------------------------//
+	// Add instructions text
 	welcomeTxt := &screenText{text: "Welcome!", x: width/2 - 4, y: height/2 - 3}
 	screenObjects["welcomeTxt"] = welcomeTxt
 
@@ -94,6 +83,7 @@ func main() {
 
 	drawObjects(screenObjects)
 
+	// Handle input
 StartLoop:
 	for {
 		event := <-eventChan
@@ -111,19 +101,23 @@ StartLoop:
 		}
 
 	}
+	// Delete instructions text
 	delete(screenObjects, "welcomeTxt")
 	delete(screenObjects, "enterTxt")
 	delete(screenObjects, "arrowsTxt")
 	delete(screenObjects, "rTxt")
 	delete(screenObjects, "qTxt")
-	snake := newSnake(width, height, arena)
-	screenObjects["snake"] = snake
 	//-------------------------------//
 
-	// Game loop
+	// Main Game
 	//-------------------------------//
+	// New snake game object
+	snake := newSnake(width, height, arena)
+	screenObjects["snake"] = snake
+	// Ticker for regular frame updates
 	ticker := time.NewTicker(time.Millisecond * 200)
 	restart := false
+	// Game loop
 GameLoop:
 	for {
 		// Input Handling
@@ -158,7 +152,7 @@ GameLoop:
 		if snake.eat() {
 			score.incr()
 		}
-		if snake.checkCollision() || restart {
+		if snake.collision() || restart {
 			if score.count > bestScore.count {
 				bestScore.count = score.count
 			}

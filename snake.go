@@ -95,7 +95,7 @@ func (s *snake) render() []*screenCell {
 	return cells
 }
 
-func (s *snake) checkCollision() bool {
+func (s *snake) collision() bool {
 	for _, cell := range s.body {
 		if s.head.x == cell.x && s.head.y == cell.y {
 			return true
